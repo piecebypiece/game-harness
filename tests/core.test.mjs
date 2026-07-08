@@ -7,10 +7,14 @@ import {
   addEvidence,
   detectProjectState,
   exportEvaluatorPacket,
+  compareBaselines,
   parseEvidenceKind,
+  parseSmokeSnapshotText,
+  evaluateSmokeSnapshot,
   proposeImprovements,
   renderStatus,
-  SCHEMAS
+  SCHEMAS,
+  unityCliSuggestions
 } from "../dist/index.js";
 
 test("detectProjectState records SoT files and schema", async () => {
@@ -94,4 +98,46 @@ test("exportEvaluatorPacket writes packet with snapshot evidence and proposals",
   assert.equal(parsed.schema, SCHEMAS.evaluatorPacket);
   assert.equal(parsed.evidence_records.length, 1);
   assert.equal(parsed.improvement_proposals.length, 1);
+});
+
+test("exportEvaluatorPacket rolls up evidence limitations", async () => {
+  const projectRoot = await mkdtemp(path.join(os.tmpdir(), "game-harness-packet-limit-"));
+  await addEvidence({
+    project: projectRoot,
+    kind: "manual",
+    status: "PASS",
+    summary: "limited evidence",
+    limitations: ["manual evidence does not prove runtime behavior"]
+  });
+
+  const out = path.join(projectRoot, "packet.json");
+  const result = await exportEvaluatorPacket({ project: projectRoot, out });
+
+  assert.equal(result.packet.limitations.some((item) => item.includes("manual evidence does not prove runtime behavior")), true);
+});
+
+test("Balance Island smoke parser keeps Session 9 as partial", async () => {
+  const text = await readFile(path.resolve("fixtures/balance-island/session-9-smoke.txt"), "utf8");
+  const snapshot = parseSmokeSnapshotText(text);
+  const verdict = evaluateSmokeSnapshot(snapshot);
+
+  assert.equal(verdict.status, "PARTIAL");
+  assert.equal(verdict.missing.includes("liveAgents"), true);
+  assert.equal(verdict.missing.includes("hasKpi"), true);
+});
+
+test("Balance Island command suggestions do not execute unity-cli", () => {
+  const commands = unityCliSuggestions("fixtures/balance-island");
+
+  assert.equal(commands.length, 3);
+  assert.match(commands[0], /unity-cli --project/);
+});
+
+test("Balance Island baseline comparison detects no new changes", () => {
+  const before = ["## main...origin/main [ahead 2]", " M Docs/WORK_TRACKER.md"];
+  const after = ["## main...origin/main [ahead 2]", " M Docs/WORK_TRACKER.md"];
+  const comparison = compareBaselines(before, after);
+
+  assert.equal(comparison.unchanged, true);
+  assert.deepEqual(comparison.added, []);
 });

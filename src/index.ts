@@ -4,4 +4,7 @@ export { proposeImprovements } from "./core/improvement.js";
 export { detectProjectState } from "./core/project-state.js";
 export { renderStatus } from "./core/status.js";
 export { parseEvidenceKind, parseHarnessStatus } from "./core/validation.js";
+export { captureGitBaseline, compareBaselines } from "./profiles/balance-island/baseline.js";
+export { evaluateSmokeSnapshot, parseSmokeSnapshotText } from "./profiles/balance-island/smoke.js";
+export { unityCliSuggestions } from "./profiles/balance-island/unity-cli.js";
 export * from "./types.js";

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "com.youngwoocho02.unity-cli-connector": "https://github.com/youngwoocho02/unity-cli.git?path=unity-connector#v0.3.22"
+  }
+}
+

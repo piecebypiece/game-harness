@@ -115,3 +115,11 @@ export interface EvaluatorPacket {
   pass_criteria_mapping: Record<string, "PASS" | "PARTIAL" | "BLOCKED">;
   limitations: string[];
 }
+
+export interface BaselineComparison {
+  before: string[];
+  after: string[];
+  added: string[];
+  removed: string[];
+  unchanged: boolean;
+}

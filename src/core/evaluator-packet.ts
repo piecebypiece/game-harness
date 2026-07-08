@@ -3,7 +3,7 @@ import { readEvidenceRecords, readImprovementProposals } from "./artifacts.js";
 import { detectProjectState } from "./project-state.js";
 import { resolveProjectPath } from "./paths.js";
 import { writeJson } from "./fs-utils.js";
-import { SCHEMAS, type EvaluatorPacket } from "../types.js";
+import { SCHEMAS, type EvaluatorPacket, type LocatedEvidenceRecord } from "../types.js";
 
 export interface ExportEvaluatorPacketOptions {
   project: string;
@@ -37,7 +37,7 @@ export async function exportEvaluatorPacket(options: ExportEvaluatorPacketOption
       "improvement-proposals": improvementProposals.length > 0 ? "PASS" : "PARTIAL",
       "external-evaluator-ready": "PASS"
     },
-    limitations: buildLimitations(evidenceRecords.length, improvementProposals.length)
+    limitations: buildLimitations(evidenceRecords, improvementProposals.length)
   };
 
   const outPath = path.resolve(options.out);
@@ -45,14 +45,18 @@ export async function exportEvaluatorPacket(options: ExportEvaluatorPacketOption
   return { packet, path: outPath };
 }
 
-function buildLimitations(evidenceCount: number, proposalCount: number): string[] {
+function buildLimitations(evidenceRecords: LocatedEvidenceRecord[], proposalCount: number): string[] {
   const limitations: string[] = [];
-  if (evidenceCount === 0) {
+  if (evidenceRecords.length === 0) {
     limitations.push("No Evidence Record files were found for this project.");
   }
   if (proposalCount === 0) {
     limitations.push("No Improvement Proposal files were found for this project.");
   }
+  for (const evidence of evidenceRecords) {
+    for (const limitation of evidence.record.limitations) {
+      limitations.push(`${evidence.path}: ${limitation}`);
+    }
+  }
   return limitations;
 }
-

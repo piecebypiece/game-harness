@@ -1,0 +1,3 @@
+BI_SMOKE_SNAPSHOT {"scene":"BalanceIslandMVP","worldCreated":true,"liveAgents":0,"activeActions":0,"hasTime":false,"currentTick":-1,"hasSpawn":false,"spawned":false,"hasGrid":false,"hasObservation":false,"hasKpi":false,"kpiTotalAlive":-1}
+BI_WORLD_DIAG worlds=Default World:3;LoadingWorld0:0;LoadingWorld1:0;LoadingWorld2:0;LoadingWorld3:0;LoadingWorld (synchronous):0 authoring=AgentSpawnConfigAuthoring:1,WorldGridAuthoring:1,TimeControlAuthoring:1,WorldManagerAuthoring:1,HerdConfigAuthoring:1,AgentAuthoring:0,SpeciesTuningAuthoring:0
+

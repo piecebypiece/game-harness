@@ -7,6 +7,9 @@ import { proposeImprovements } from "../core/improvement.js";
 import { detectProjectState } from "../core/project-state.js";
 import { renderStatus } from "../core/status.js";
 import { parseEvidenceKind, parseHarnessStatus } from "../core/validation.js";
+import { compareBaselines } from "../profiles/balance-island/baseline.js";
+import { evaluateSmokeSnapshot, parseSmokeSnapshotText } from "../profiles/balance-island/smoke.js";
+import { unityCliSuggestions } from "../profiles/balance-island/unity-cli.js";
 import { parseArgs, stringFlag } from "./args.js";
 
 const HELP = `Game Harness
@@ -17,6 +20,9 @@ Usage:
   game-harness evidence add --project <path> --kind <kind> --status <status> --summary <text> [--command <cmd>]
   game-harness improve propose --project <path>
   game-harness export evaluator-packet --project <path> --out <path> [--profile <name>]
+  game-harness profile balance-island commands --project <path>
+  game-harness profile balance-island smoke parse --input <path> [--expected-agents <n>]
+  game-harness profile balance-island baseline compare --before <path> --after <path>
 
 Commands:
   detect                   Print a project state snapshot. Writes only when --out is set.
@@ -24,6 +30,7 @@ Commands:
   evidence add             Add an Evidence Record under artifacts/game-harness/evidence.
   improve propose          Generate Improvement Proposals from actionable evidence.
   export evaluator-packet  Export a read-only evaluator packet.
+  profile balance-island   Run Balance Island profile helpers.
 `;
 
 async function main(argv: string[]): Promise<void> {
@@ -87,7 +94,48 @@ async function main(argv: string[]): Promise<void> {
     return;
   }
 
+  if (command === "profile" && subcommand === "balance-island") {
+    await runBalanceIslandProfile(parsed.positionals.slice(2), parsed.flags);
+    return;
+  }
+
   throw new Error(`Unknown command: ${argv.join(" ")}`);
+}
+
+async function runBalanceIslandProfile(positionals: string[], flags: Record<string, string | boolean>): Promise<void> {
+  const [area, action] = positionals;
+
+  if (area === "commands") {
+    const project = stringFlag(flags, "project", true)!;
+    console.log(JSON.stringify({ commands: unityCliSuggestions(project) }, null, 2));
+    return;
+  }
+
+  if (area === "smoke" && action === "parse") {
+    const input = stringFlag(flags, "input", true)!;
+    const expectedAgentsFlag = stringFlag(flags, "expected-agents");
+    const expectedAgents = expectedAgentsFlag ? Number.parseInt(expectedAgentsFlag, 10) : 1;
+    if (!Number.isFinite(expectedAgents) || expectedAgents < 1) {
+      throw new Error("--expected-agents must be a positive integer");
+    }
+    const text = await import("node:fs/promises").then((fs) => fs.readFile(input, "utf8"));
+    const snapshot = parseSmokeSnapshotText(text);
+    const verdict = evaluateSmokeSnapshot(snapshot, expectedAgents);
+    console.log(JSON.stringify(verdict, null, 2));
+    return;
+  }
+
+  if (area === "baseline" && action === "compare") {
+    const before = stringFlag(flags, "before", true)!;
+    const after = stringFlag(flags, "after", true)!;
+    const fs = await import("node:fs/promises");
+    const beforeLines = (await fs.readFile(before, "utf8")).split(/\r?\n/).filter(Boolean);
+    const afterLines = (await fs.readFile(after, "utf8")).split(/\r?\n/).filter(Boolean);
+    console.log(JSON.stringify(compareBaselines(beforeLines, afterLines), null, 2));
+    return;
+  }
+
+  throw new Error(`Unknown Balance Island profile command: ${positionals.join(" ")}`);
 }
 
 main(process.argv.slice(2)).catch((error: unknown) => {

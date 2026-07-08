@@ -1,0 +1,5 @@
+## main...origin/main [ahead 2]
+ M Docs/WORK_TRACKER.md
+ M Packages/manifest.json
+?? .agents/
+
