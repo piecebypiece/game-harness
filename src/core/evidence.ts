@@ -1,6 +1,7 @@
 import path from "node:path";
 import { harnessArtifactDir, resolveProjectPath, safeTimestamp } from "./paths.js";
 import { writeJson } from "./fs-utils.js";
+import { parseEvidenceKind, parseHarnessStatus } from "./validation.js";
 import { SCHEMAS, type ArtifactRef, type EvidenceKind, type EvidenceRecord, type HarnessStatus } from "../types.js";
 
 export interface AddEvidenceOptions {
@@ -25,9 +26,9 @@ export async function addEvidence(options: AddEvidenceOptions): Promise<AddEvide
     schema: SCHEMAS.evidence,
     created_at: new Date().toISOString(),
     project_root: projectRoot,
-    kind: options.kind,
+    kind: parseEvidenceKind(options.kind),
     command: options.command ?? null,
-    status: options.status,
+    status: parseHarnessStatus(options.status),
     summary: options.summary,
     artifacts: options.artifacts ?? [],
     claims_supported: options.claimsSupported ?? [],
@@ -38,4 +39,3 @@ export async function addEvidence(options: AddEvidenceOptions): Promise<AddEvide
   await writeJson(filePath, record);
   return { record, path: filePath };
 }
-

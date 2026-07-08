@@ -23,10 +23,11 @@ npm run build
 node dist/cli/index.js detect --project fixtures/generic-project
 node dist/cli/index.js status --project fixtures/generic-project
 node dist/cli/index.js evidence add --project fixtures/generic-project --kind test --status PASS --summary "fixture evidence"
+node dist/cli/index.js improve propose --project fixtures/generic-project
+node dist/cli/index.js export evaluator-packet --project fixtures/generic-project --out artifacts/evaluator-packet.json
 ```
 
 ## Milestone Boundary
 
-M1 intentionally excludes project-specific profiles. Balance Island support is
-implemented in a later milestone so the engine-neutral core remains separate.
-
+M1/M2 intentionally exclude project-specific profiles. Balance Island support
+is implemented in a later milestone so the engine-neutral core remains separate.

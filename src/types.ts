@@ -3,7 +3,8 @@ export const SCHEMAS = {
   evidence: "game-harness.evidence.v0",
   improvement: "game-harness.improvement.v0",
   agentModel: "game-harness.agent-model.v0",
-  technologyTrend: "game-harness.technology-trend.v0"
+  technologyTrend: "game-harness.technology-trend.v0",
+  evaluatorPacket: "game-harness.evaluator-packet.v0"
 } as const;
 
 export type HarnessStatus = "PASS" | "FAIL" | "PARTIAL" | "BLOCKED" | "NOT_RUN";
@@ -94,3 +95,23 @@ export interface TechnologyTrendSnapshot {
   impact: string[];
 }
 
+export interface LocatedEvidenceRecord {
+  path: string;
+  record: EvidenceRecord;
+}
+
+export interface LocatedImprovementProposal {
+  path: string;
+  proposal: ImprovementProposal;
+}
+
+export interface EvaluatorPacket {
+  schema: typeof SCHEMAS.evaluatorPacket;
+  created_at: string;
+  project_root: string;
+  snapshot: ProjectStateSnapshot;
+  evidence_records: LocatedEvidenceRecord[];
+  improvement_proposals: LocatedImprovementProposal[];
+  pass_criteria_mapping: Record<string, "PASS" | "PARTIAL" | "BLOCKED">;
+  limitations: string[];
+}
