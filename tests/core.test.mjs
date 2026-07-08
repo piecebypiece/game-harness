@@ -5,16 +5,13 @@ import path from "node:path";
 import test from "node:test";
 import {
   addEvidence,
+  balanceIslandProfile,
   detectProjectState,
   exportEvaluatorPacket,
-  compareBaselines,
   parseEvidenceKind,
-  parseSmokeSnapshotText,
-  evaluateSmokeSnapshot,
   proposeImprovements,
   renderStatus,
-  SCHEMAS,
-  unityCliSuggestions
+  SCHEMAS
 } from "../dist/index.js";
 
 test("detectProjectState records SoT files and schema", async () => {
@@ -118,8 +115,8 @@ test("exportEvaluatorPacket rolls up evidence limitations", async () => {
 
 test("Balance Island smoke parser keeps Session 9 as partial", async () => {
   const text = await readFile(path.resolve("fixtures/balance-island/session-9-smoke.txt"), "utf8");
-  const snapshot = parseSmokeSnapshotText(text);
-  const verdict = evaluateSmokeSnapshot(snapshot);
+  const snapshot = balanceIslandProfile.parseSmokeSnapshotText(text);
+  const verdict = balanceIslandProfile.evaluateSmokeSnapshot(snapshot);
 
   assert.equal(verdict.status, "PARTIAL");
   assert.equal(verdict.missing.includes("liveAgents"), true);
@@ -127,7 +124,7 @@ test("Balance Island smoke parser keeps Session 9 as partial", async () => {
 });
 
 test("Balance Island command suggestions do not execute unity-cli", () => {
-  const commands = unityCliSuggestions("fixtures/balance-island");
+  const commands = balanceIslandProfile.unityCliSuggestions("fixtures/balance-island");
 
   assert.equal(commands.length, 3);
   assert.match(commands[0], /unity-cli --project/);
@@ -136,7 +133,7 @@ test("Balance Island command suggestions do not execute unity-cli", () => {
 test("Balance Island baseline comparison detects no new changes", () => {
   const before = ["## main...origin/main [ahead 2]", " M Docs/WORK_TRACKER.md"];
   const after = ["## main...origin/main [ahead 2]", " M Docs/WORK_TRACKER.md"];
-  const comparison = compareBaselines(before, after);
+  const comparison = balanceIslandProfile.compareBaselines(before, after);
 
   assert.equal(comparison.unchanged, true);
   assert.deepEqual(comparison.added, []);

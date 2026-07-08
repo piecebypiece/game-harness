@@ -1,0 +1,7 @@
+fixtures/**/artifacts/
+artifacts/
+.game-harness/
+coverage/
+node_modules/
+*.log
+
