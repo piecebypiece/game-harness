@@ -40,7 +40,7 @@ node dist/cli/index.js profile balance-island commands --project fixtures/balanc
 
 - `detect` prints a snapshot unless `--out` is explicitly provided.
 - `unity-cli` commands are suggestions only in the Balance Island profile.
-- Session 9 Balance Island smoke evidence remains `PARTIAL` when ECS runtime
+- Session 9 Balance Island smoke evidence remains partial when ECS runtime
   fields are missing, even if `worldCreated=true`.
 - Dirty live repositories require pre/post baseline comparison before a
   no-change PASS can be claimed.
