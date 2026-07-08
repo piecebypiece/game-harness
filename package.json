@@ -1,0 +1,33 @@
+{
+  "name": "@game-harness/core",
+  "version": "0.1.0",
+  "description": "Minimal self-evolving harness core for game development projects.",
+  "type": "module",
+  "bin": {
+    "game-harness": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "fixtures",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "game-development",
+    "harness",
+    "ai-agent",
+    "evidence"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}
+

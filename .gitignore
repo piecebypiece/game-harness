@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+.game-harness/
+artifacts/
+*.log
+
