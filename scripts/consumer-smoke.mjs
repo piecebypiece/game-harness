@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const temp = await mkdtemp(path.join(os.tmpdir(), "game-harness-consumer-"));
+const remoteInstallSpec = process.env.GAME_HARNESS_INSTALL_SPEC?.trim();
 let tarball;
 
 function run(command, args, cwd = root) {
@@ -20,10 +21,14 @@ function run(command, args, cwd = root) {
 }
 
 try {
-  const packReport = JSON.parse(run("npm", ["pack", "--silent", "--json"]));
-  tarball = path.join(root, packReport[0].filename);
+  let installSpec = remoteInstallSpec;
+  if (!installSpec) {
+    const packReport = JSON.parse(run("npm", ["pack", "--silent", "--json"]));
+    tarball = path.join(root, packReport[0].filename);
+    installSpec = tarball;
+  }
   run("npm", ["init", "--yes"], temp);
-  run("npm", ["install", tarball, "--ignore-scripts", "--no-audit", "--no-fund"], temp);
+  run("npm", ["install", installSpec, "--ignore-scripts", "--no-audit", "--no-fund"], temp);
 
   const installedRoot = path.join(temp, "node_modules", "@game-harness", "core");
   const api = await import(pathToFileURL(path.join(installedRoot, "dist", "index.js")).href);
@@ -41,7 +46,12 @@ try {
 
   const installedPackage = JSON.parse(await readFile(path.join(installedRoot, "package.json"), "utf8"));
   assert.equal(installedPackage.version, "0.2.0");
-  console.log(JSON.stringify({ status: "PASS", installed_version: installedPackage.version, temp_consumer: true }, null, 2));
+  console.log(JSON.stringify({
+    status: "PASS",
+    installed_version: installedPackage.version,
+    source: remoteInstallSpec ? "remote" : "local-tarball",
+    temp_consumer: true
+  }, null, 2));
 } finally {
   if (tarball) await rm(tarball, { force: true });
   await rm(temp, { recursive: true, force: true });
