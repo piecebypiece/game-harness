@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { DEFAULT_DO_NOT_TOUCH, resolveProjectPath } from "./paths.js";
 import { exists, readTextIfExists } from "./fs-utils.js";
-import { SCHEMAS, type EngineState, type FilePresence, type GitState, type ProjectStateSnapshot } from "../types.js";
+import { assertArtifact, SCHEMAS, type EngineState, type FilePresence, type GitState, type ProjectStateSnapshot } from "../types.js";
 
 const SOT_CANDIDATES = [
   "AGENTS.md",
@@ -36,7 +36,7 @@ export async function detectProjectState(options: DetectOptions): Promise<Projec
   const gitState = detectGitState(projectRoot);
   const knownBlockers = await detectKnownBlockers(projectRoot, sotFiles);
 
-  return {
+  const snapshot: ProjectStateSnapshot = {
     schema: SCHEMAS.projectState,
     created_at: new Date().toISOString(),
     project_root: projectRoot,
@@ -48,6 +48,8 @@ export async function detectProjectState(options: DetectOptions): Promise<Projec
     known_blockers: knownBlockers,
     do_not_touch: DEFAULT_DO_NOT_TOUCH
   };
+  assertArtifact("projectState", snapshot);
+  return snapshot;
 }
 
 async function presenceList(projectRoot: string, entries: string[]): Promise<FilePresence[]> {
@@ -138,4 +140,3 @@ async function detectKnownBlockers(projectRoot: string, sotFiles: FilePresence[]
   }
   return blockers;
 }
-

@@ -4,4 +4,6 @@ artifacts/
 coverage/
 node_modules/
 *.log
-
+packages/protocol/src/
+packages/protocol/tests/
+packages/protocol/tsconfig.json

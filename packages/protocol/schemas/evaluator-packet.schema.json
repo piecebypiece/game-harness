@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.evaluator-packet.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "project_root", "snapshot", "evidence_records", "improvement_proposals", "pass_criteria_mapping", "evaluation_gate", "limitations"],
+  "properties": {
+    "schema": { "const": "game-harness.evaluator-packet.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "project_root": { "type": "string", "minLength": 1 },
+    "snapshot": { "type": "object" },
+    "evidence_records": { "type": "array", "items": { "type": "object" } },
+    "improvement_proposals": { "type": "array", "items": { "type": "object" } },
+    "pass_criteria_mapping": { "type": "object" },
+    "evaluation_gate": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

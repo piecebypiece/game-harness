@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.mutation-lease.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "lease_id", "scope", "owner", "run_id", "fencing_token", "acquired_at", "expires_at"],
+  "properties": {
+    "schema": { "const": "game-harness.mutation-lease.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "lease_id": { "type": "string", "minLength": 1 },
+    "scope": { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+    "owner": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "fencing_token": { "type": "integer", "minimum": 1 },
+    "acquired_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" }
+  }
+}

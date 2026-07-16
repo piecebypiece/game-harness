@@ -2,7 +2,7 @@ import path from "node:path";
 import { readEvidenceRecords } from "./artifacts.js";
 import { harnessArtifactDir, resolveProjectPath, safeTimestamp } from "./paths.js";
 import { writeJson } from "./fs-utils.js";
-import { SCHEMAS, type EvidenceRecord, type ImprovementProposal, type LocatedEvidenceRecord } from "../types.js";
+import { assertArtifact, SCHEMAS, type EvidenceRecord, type ImprovementProposal, type LocatedEvidenceRecord } from "../types.js";
 
 const ACTIONABLE_STATUSES = new Set(["FAIL", "PARTIAL", "BLOCKED", "NOT_RUN"]);
 
@@ -24,6 +24,7 @@ export async function proposeImprovements(options: ProposeImprovementsOptions): 
 
   const paths: string[] = [];
   for (const proposal of proposals) {
+    assertArtifact("improvement", proposal);
     const filePath = path.join(harnessArtifactDir(projectRoot, "proposals"), `${safeTimestamp()}-${proposal.target}.json`);
     await writeJson(filePath, proposal);
     paths.push(filePath);
@@ -96,4 +97,3 @@ function inferRisk(record: EvidenceRecord): ImprovementProposal["risk"] {
   }
   return "low";
 }
-

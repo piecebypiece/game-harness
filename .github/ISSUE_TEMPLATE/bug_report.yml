@@ -1,0 +1,47 @@
+name: Bug report
+description: 재현 가능한 동작 오류를 보고합니다.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: 보안 문제와 실제 credential은 공개 issue에 올리지 말고 SECURITY.md를 사용하세요.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: 0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - Protocol/schema
+        - Reference Runtime API
+        - CLI
+        - Packaging/install
+        - Documentation
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 최소 재현 단계
+      description: 비공개 경로와 데이터를 제거한 synthetic fixture를 사용해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대 동작
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 실제 결과와 evidence
+      description: command, status, 최소 로그를 포함하세요.
+    validations:
+      required: true

@@ -1,8 +1,11 @@
 {
   "name": "@game-harness/core",
-  "version": "0.1.0",
-  "description": "Minimal self-evolving harness core for game development projects.",
+  "version": "0.2.0",
+  "description": "Protocol-first evidence and decision sidecar for AI-assisted game development.",
   "type": "module",
+  "workspaces": [
+    "packages/protocol"
+  ],
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -12,6 +15,10 @@
     "./profiles/balance-island": {
       "types": "./dist/profiles/balance-island/index.d.ts",
       "import": "./dist/profiles/balance-island/index.js"
+    },
+    "./protocol": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
     }
   },
   "bin": {
@@ -19,16 +26,32 @@
   },
   "files": [
     "dist",
+    "packages/protocol/dist",
+    "packages/protocol/schemas",
+    "packages/protocol/package.json",
+    "packages/protocol/README.md",
+    "packages/protocol/LICENSE",
     "docs",
     "fixtures",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "GOVERNANCE.md",
+    "SECURITY.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build:protocol": "npm run build --workspace @game-harness/protocol",
+    "build": "npm run build:protocol && tsc -p tsconfig.json",
     "prepack": "npm run build",
-    "test": "npm run build && node --test tests/*.test.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "prepare": "npm run build",
+    "test": "npm run build && node --test packages/protocol/tests/*.test.mjs tests/*.test.mjs",
+    "test:consumer": "node scripts/consumer-smoke.mjs",
+    "test:protocol": "npm test --workspace @game-harness/protocol",
+    "typecheck": "npm run build:protocol && tsc -p tsconfig.json --noEmit",
+    "verify:package": "node scripts/verify-package.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run verify:package"
   },
   "keywords": [
     "game-development",
@@ -36,7 +59,21 @@
     "ai-agent",
     "evidence"
   ],
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/piecebypiece/game-harness.git"
+  },
+  "homepage": "https://github.com/piecebypiece/game-harness#readme",
+  "bugs": {
+    "url": "https://github.com/piecebypiece/game-harness/issues"
+  },
   "license": "MIT",
+  "dependencies": {
+    "@game-harness/protocol": "file:packages/protocol"
+  },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "typescript": "^5.7.0"

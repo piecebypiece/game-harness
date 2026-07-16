@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.technology-trend.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "date", "source", "adopt", "trial", "hold", "remove", "impact"],
+  "properties": {
+    "schema": { "const": "game-harness.technology-trend.v1" },
+    "date": { "type": "string", "minLength": 1 },
+    "source": { "type": "string", "minLength": 1 },
+    "adopt": { "type": "array", "items": { "type": "string" } },
+    "trial": { "type": "array", "items": { "type": "string" } },
+    "hold": { "type": "array", "items": { "type": "string" } },
+    "remove": { "type": "array", "items": { "type": "string" } },
+    "impact": { "type": "array", "items": { "type": "string" } }
+  }
+}

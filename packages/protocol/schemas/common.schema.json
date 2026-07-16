@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.common.v1",
+  "title": "Game Harness common contract metadata",
+  "type": "object",
+  "required": ["schema", "created_at"],
+  "properties": {
+    "schema": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "producer": { "type": "string", "minLength": 1 },
+    "project_fingerprint": { "type": "string", "minLength": 1 },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,32 @@
+name: Contract or feature proposal
+description: 새 계약, Module, Pack 또는 Reference Runtime 기능을 제안합니다.
+title: "[Proposal] "
+labels: [proposal]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 해결할 실제 문제
+      description: 특정 도구 기능보다 관측된 게임개발 문제를 설명해 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 현재 evidence
+      description: 반복 빈도, fixture, 프로젝트 영향 또는 사용자 관찰을 적어 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: boundary
+    attributes:
+      label: 제안 경계와 대체 가능성
+      description: Core, Runtime, Profile, Module, Discipline Pack 중 어디에 속하며 무엇으로 교체 가능한가요?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance와 반증 조건
+    validations:
+      required: true

@@ -3,7 +3,7 @@ import { readEvidenceRecords, readImprovementProposals } from "./artifacts.js";
 import { detectProjectState } from "./project-state.js";
 import { resolveProjectPath } from "./paths.js";
 import { writeJson } from "./fs-utils.js";
-import { SCHEMAS, type EvaluatorPacket, type LocatedEvidenceRecord } from "../types.js";
+import { assertArtifact, redactArtifactForExport, SCHEMAS, type EvaluatorPacket, type LocatedEvidenceRecord } from "../types.js";
 
 export interface ExportEvaluatorPacketOptions {
   project: string;
@@ -24,7 +24,7 @@ export async function exportEvaluatorPacket(options: ExportEvaluatorPacketOption
     readImprovementProposals(projectRoot)
   ]);
 
-  const packet: EvaluatorPacket = {
+  const rawPacket: EvaluatorPacket = {
     schema: SCHEMAS.evaluatorPacket,
     created_at: new Date().toISOString(),
     project_root: projectRoot,
@@ -34,12 +34,19 @@ export async function exportEvaluatorPacket(options: ExportEvaluatorPacketOption
     pass_criteria_mapping: {
       "project-state-snapshot": snapshot.schema === SCHEMAS.projectState ? "PASS" : "BLOCKED",
       "evidence-records": evidenceRecords.length > 0 ? "PASS" : "PARTIAL",
-      "improvement-proposals": improvementProposals.length > 0 ? "PASS" : "PARTIAL",
-      "external-evaluator-ready": "PASS"
+      "improvement-proposals": improvementProposals.length > 0 ? "PASS" : "PARTIAL"
+    },
+    evaluation_gate: {
+      status: "NOT_RUN",
+      assignment_supplied: false,
+      result_supplied: false,
+      missing: ["EvaluationAssignment", "EvaluationResult"]
     },
     limitations: buildLimitations(evidenceRecords, improvementProposals.length)
   };
 
+  const packet = redactArtifactForExport(rawPacket);
+  assertArtifact("evaluatorPacket", packet);
   const outPath = path.resolve(options.out);
   await writeJson(outPath, packet);
   return { packet, path: outPath };

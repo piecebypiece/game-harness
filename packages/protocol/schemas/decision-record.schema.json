@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.decision-record.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "decision_id", "decision_type", "status", "owner", "rationale", "bound_hash", "expires_at"],
+  "properties": {
+    "schema": { "const": "game-harness.decision-record.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "decision_id": { "type": "string", "minLength": 1 },
+    "decision_type": { "enum": ["execution", "requirement-scope-change"] },
+    "status": { "enum": ["PENDING", "APPROVED", "REJECTED", "EXPIRED"] },
+    "owner": { "type": "string", "minLength": 1 },
+    "rationale": { "type": "string", "minLength": 1 },
+    "bound_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "expires_at": { "type": "string", "format": "date-time" }
+  }
+}

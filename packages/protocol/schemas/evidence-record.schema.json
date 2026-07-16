@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.evidence.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "project_root", "kind", "command", "status", "summary", "artifacts", "claims_supported", "limitations"],
+  "properties": {
+    "schema": { "const": "game-harness.evidence.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "project_root": { "type": "string", "minLength": 1 },
+    "kind": { "enum": ["build", "test", "runtime", "static", "doc", "manual"] },
+    "command": { "anyOf": [{ "type": "string" }, { "type": "null" }] },
+    "status": { "enum": ["PASS", "FAIL", "PARTIAL", "BLOCKED", "NOT_RUN"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "artifacts": { "type": "array", "items": { "type": "object" } },
+    "claims_supported": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "producer": { "type": "string", "minLength": 1 },
+    "project_fingerprint": { "type": "string", "minLength": 1 }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.improvement.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "source_evidence", "problem", "proposal", "target", "risk", "acceptance", "requires_external_pass"],
+  "properties": {
+    "schema": { "const": "game-harness.improvement.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "source_evidence": { "type": "array", "items": { "type": "string" } },
+    "problem": { "type": "string", "minLength": 1 },
+    "proposal": { "type": "string", "minLength": 1 },
+    "target": { "enum": ["core", "profile", "docs", "tests", "fixtures"] },
+    "risk": { "enum": ["low", "medium", "high"] },
+    "acceptance": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "requires_external_pass": { "const": true }
+  }
+}

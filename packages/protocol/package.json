@@ -1,0 +1,29 @@
+{
+  "name": "@game-harness/protocol",
+  "version": "0.2.0",
+  "description": "Versioned protocol contracts for the Game Harness Set.",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schemas/*": "./schemas/*"
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

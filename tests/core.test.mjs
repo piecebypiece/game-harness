@@ -95,6 +95,11 @@ test("exportEvaluatorPacket writes packet with snapshot evidence and proposals",
   assert.equal(parsed.schema, SCHEMAS.evaluatorPacket);
   assert.equal(parsed.evidence_records.length, 1);
   assert.equal(parsed.improvement_proposals.length, 1);
+  assert.equal("external-evaluator-ready" in parsed.pass_criteria_mapping, false);
+  assert.equal(parsed.evaluation_gate.status, "NOT_RUN");
+  assert.deepEqual(parsed.evaluation_gate.missing, ["EvaluationAssignment", "EvaluationResult"]);
+  assert.notEqual(parsed.project_root, projectRoot);
+  assert.doesNotMatch(JSON.stringify(parsed), new RegExp(projectRoot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
 
 test("exportEvaluatorPacket rolls up evidence limitations", async () => {

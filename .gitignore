@@ -4,4 +4,4 @@ coverage/
 .game-harness/
 artifacts/
 *.log
-
+*.tgz

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.requirement-set.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "set_id", "version", "requirements", "limitations"],
+  "properties": {
+    "schema": { "const": "game-harness.requirement-set.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "set_id": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "disposition", "source", "source_hash", "acceptance_owner"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "statement": { "type": "string", "minLength": 1 },
+          "disposition": { "enum": ["required", "optional", "out-of-scope"] },
+          "source": { "type": "string", "minLength": 1 },
+          "source_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "acceptance_owner": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

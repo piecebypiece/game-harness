@@ -3,6 +3,7 @@ import path from "node:path";
 import { harnessArtifactDir, resolveProjectPath } from "./paths.js";
 import { exists } from "./fs-utils.js";
 import {
+  validateArtifact,
   SCHEMAS,
   type EvidenceRecord,
   type ImprovementProposal,
@@ -63,14 +64,13 @@ async function readJson(filePath: string): Promise<unknown> {
 }
 
 function isEvidenceRecord(value: unknown): value is EvidenceRecord {
-  return isRecord(value) && value.schema === SCHEMAS.evidence;
+  return isRecord(value) && value.schema === SCHEMAS.evidence && validateArtifact("evidence", value).valid;
 }
 
 function isImprovementProposal(value: unknown): value is ImprovementProposal {
-  return isRecord(value) && value.schema === SCHEMAS.improvement;
+  return isRecord(value) && value.schema === SCHEMAS.improvement && validateArtifact("improvement", value).valid;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
-

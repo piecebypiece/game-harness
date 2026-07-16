@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.install-ledger.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "install_id", "package_version", "owned_files", "modified_files", "permissions", "rollback_supported", "limitations"],
+  "properties": {
+    "schema": { "const": "game-harness.install-ledger.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "install_id": { "type": "string", "minLength": 1 },
+    "package_version": { "type": "string", "minLength": 1 },
+    "owned_files": { "type": "array", "items": { "type": "object" } },
+    "modified_files": { "type": "array", "items": { "type": "object" } },
+    "permissions": { "type": "array", "items": { "type": "string" } },
+    "rollback_supported": { "type": "boolean" },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

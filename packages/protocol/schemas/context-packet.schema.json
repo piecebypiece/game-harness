@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.context-packet.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "packet_id", "branch", "head", "dirty", "anchors", "verified_at", "expires_at", "missing", "limitations"],
+  "properties": {
+    "schema": { "const": "game-harness.context-packet.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "packet_id": { "type": "string", "minLength": 1 },
+    "branch": { "type": "string", "minLength": 1 },
+    "head": { "type": "string", "minLength": 7 },
+    "dirty": { "type": "boolean" },
+    "anchors": { "type": "array", "items": { "type": "object" } },
+    "verified_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "limitations": { "type": "array", "items": { "type": "string" } }
+  }
+}

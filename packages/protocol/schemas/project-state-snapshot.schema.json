@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.project-state.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "created_at", "project_root", "profile", "sot_files", "git_state", "engine_state", "harness_surfaces", "known_blockers", "do_not_touch"],
+  "properties": {
+    "schema": { "const": "game-harness.project-state.v1" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "project_root": { "type": "string", "minLength": 1 },
+    "profile": { "type": "string", "minLength": 1 },
+    "sot_files": { "type": "array", "items": { "type": "object" } },
+    "git_state": { "type": "object" },
+    "engine_state": { "type": "object" },
+    "harness_surfaces": { "type": "array", "items": { "type": "object" } },
+    "known_blockers": { "type": "array", "items": { "type": "string" } },
+    "do_not_touch": { "type": "array", "items": { "type": "string" } }
+  }
+}
