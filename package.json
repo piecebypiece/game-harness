@@ -46,7 +46,7 @@
     "build": "npm run build:protocol && tsc -p tsconfig.json",
     "prepack": "npm run build",
     "prepare": "npm run build",
-    "test": "npm run build && node --test packages/protocol/tests/*.test.mjs tests/*.test.mjs",
+    "test": "npm run build && node --test packages/protocol/tests/completeness.test.mjs packages/protocol/tests/protocol.test.mjs tests/core.test.mjs",
     "test:consumer": "node scripts/consumer-smoke.mjs",
     "test:protocol": "npm test --workspace @game-harness/protocol",
     "typecheck": "npm run build:protocol && tsc -p tsconfig.json --noEmit",
