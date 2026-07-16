@@ -28,7 +28,9 @@ try {
     installSpec = tarball;
   }
   run("npm", ["init", "--yes"], temp);
-  run("npm", ["install", installSpec, "--ignore-scripts", "--no-audit", "--no-fund"], temp);
+  const installArguments = ["install", installSpec, "--no-audit", "--no-fund"];
+  if (!remoteInstallSpec) installArguments.push("--ignore-scripts");
+  run("npm", installArguments, temp);
 
   const installedRoot = path.join(temp, "node_modules", "@game-harness", "core");
   const api = await import(pathToFileURL(path.join(installedRoot, "dist", "index.js")).href);
