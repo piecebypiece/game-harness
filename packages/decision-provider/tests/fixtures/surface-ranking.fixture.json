@@ -1,0 +1,27 @@
+{
+  "request": {
+    "schema": "game-harness.surface-ranking.request/1",
+    "task": "공개 가상 fixture의 이동 결과 표시 문서를 찾는다.",
+    "candidates": [
+      { "id": "D:direct", "path": "Docs/direct.md", "summary": "직접 지정된 계약", "evidence": ["explicit task reference"], "protected": true },
+      { "id": "D:secondary", "path": "Docs/secondary.md", "summary": "관련 없는 보조 문서", "evidence": ["derived 2-hop"], "protected": false },
+      { "id": "D:relevant", "path": "Docs/relevant.md", "summary": "이동 결과 표시 설명", "evidence": ["derived 2-hop"], "protected": false }
+    ]
+  },
+  "okResult": {
+    "schema": "game-harness.surface-ranking.result/1",
+    "provider": "openai-decisions",
+    "model": "gpt-6-luna",
+    "status": "ok",
+    "reason": null,
+    "rankings": [
+      { "id": "D:direct", "label": "low", "confidence": 0.9 },
+      { "id": "D:secondary", "label": "low", "confidence": 0.9 },
+      { "id": "D:relevant", "label": "high", "confidence": 0.9 }
+    ],
+    "usage": { "inputTokens": 250, "outputTokens": 0, "totalTokens": 250 },
+    "elapsedMs": 1
+  },
+  "expectedRerankOrder": ["D:direct", "D:relevant", "D:secondary"],
+  "expectedOffAndShadowOrder": ["D:direct", "D:secondary", "D:relevant"]
+}

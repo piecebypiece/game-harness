@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "game-harness.surface-ranking.request/1",
+  "$comment": "ID 고유성과 직렬화한 UTF-8 64KiB 상한은 runtime에서도 검사한다.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "task", "candidates"],
+  "properties": {
+    "schema": { "const": "game-harness.surface-ranking.request/1" },
+    "task": { "type": "string" },
+    "candidates": {
+      "type": "array", "maxItems": 128,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "path", "summary", "evidence", "protected"],
+        "properties": {
+          "id": { "type": "string" }, "path": { "type": "string" },
+          "summary": { "type": "string" }, "evidence": { "type": "array", "items": { "type": "string" } },
+          "protected": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

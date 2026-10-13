@@ -51,6 +51,8 @@
     "test:protocol": "npm test --workspace @game-harness/protocol",
     "typecheck": "npm run build:protocol && tsc -p tsconfig.json --noEmit",
     "verify:package": "node scripts/verify-package.mjs",
+    "test:decision-provider-artifact": "node --test scripts/build-decision-provider-artifact.test.mjs",
+    "artifact:decision-provider": "node scripts/build-decision-provider-artifact.mjs",
     "prepublishOnly": "npm run typecheck && npm test && npm run verify:package"
   },
   "keywords": [
