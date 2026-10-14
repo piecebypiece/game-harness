@@ -35,6 +35,15 @@ test('request schema rejects absent fields, type drift and additional properties
   }
 });
 
+test('result schema binds each supported provider to its pinned model', () => {
+  const value = { ...structuredClone(fixture.okResult), provider: 'typesafe-jev', model: 'jev-1.13.0' };
+  assert.equal(validateResult(value), true);
+  value.model = 'gpt-6-luna';
+  assert.equal(validateResult(value), false);
+  value.provider = 'openai-decisions'; value.model = 'jev-1.13.0';
+  assert.equal(validateResult(value), false);
+});
+
 test('result schema enforces status-dependent whole fallback and finite bounds', () => {
   for (const mutate of [
     value => { delete value.reason; },

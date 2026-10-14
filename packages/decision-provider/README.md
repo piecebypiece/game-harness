@@ -1,8 +1,8 @@
-# Decisions 표면 후보 평가 공급자
+# Decisions·Jev 표면 후보 평가 공급자
 
 상태: 검토중
-조사 날짜: 2026-10-13
-패키지: `@game-harness/decision-provider@0.1.0`
+조사 날짜: 2026-10-14
+패키지: `@game-harness/decision-provider@0.1.1-jev.0` (선택 연동 시험판)
 
 기존 후보 메타데이터를 선택적으로 Decisions API에 평가 요청하는 독립 ES module leaf 패키지다. `rankSurfaceCandidates`는 후보를 생성하거나 정렬하지 않고 모든 요청 ID의 label과 confidence를 돌려준다. 소비자가 `ok` 결과만 사용하고, 나머지는 기존 후보 순서 전체로 fallback한다. Core, native broker, human approval용 `DecisionRequest`/`DecisionRecord`와 의존 관계가 없다. 런타임 의존성과 OpenAI SDK가 없으며 Node.js 20 이상에서 native fetch를 사용한다.
 
@@ -29,7 +29,22 @@ const result = await rankSurfaceCandidates(request, { timeoutMs: 3000 });
 // result.status !== 'ok'이면 소비자가 request.candidates 전체를 기존 순서로 사용한다.
 ```
 
-호출 전에 API 키를 `OPENAI_API_KEY` 환경변수로 명시하거나 `options.apiKey`로 전달한다. 키가 없으면 `unavailable / missing_api_key`이며 네트워크 호출은 0회다. 공급자는 파일, 인증 저장소, 계정 정보를 읽지 않는다. `options.provider`의 지원값은 `openai-decisions` 하나다. `subscription-responses` 등을 지정하면 `unavailable / unsupported_provider`로 반환하며 다른 인증·과금 경로로 전환하지 않는다. 구독 Responses adapter는 구현하지 않았다.
+기본 공급자는 `openai-decisions`다. `options.provider: 'typesafe-jev'`는 TypeSafe의 `jev-1.13.0`과 `https://api.typesafe.ai/v1/systemone`만 사용한다. Jev는 named choice questions와 high/medium/low/unknown 기준으로 기존 후보의 관련성을 평가한다. 공급자·모델·전체 ID·확률·confidence·usage를 검증하고, unknown/낮은 confidence/부분 결과는 전체 fallback한다. 출력 토큰 수는 내부 추론 유무를 증명하지 않는다.
+
+라이브러리 호출자는 `options.apiKey` 또는 공급자별 환경변수(`OPENAI_API_KEY`/`TYPESAFE_API_KEY`)를 사용할 수 있다. `apiKeyInput: 'stdin'`을 명시하면 전용 입력 통로만 사용하며 환경변수로 전환하지 않는다. 두 키 입력 방식을 동시에 지정할 수 없다. 키가 없으면 `unavailable / missing_api_key`이며 네트워크 호출은 0회다. 공급자 함수는 인증 파일·계정 저장소를 검색하지 않는다. 키가 task/후보에 포함되면 전송 전에 거부한다. 미지원 공급자는 다른 인증·과금 경로로 전환하지 않는다.
+
+## Windows에서 에이전트 반복 호출
+
+PowerShell 7에서 프로젝트별 키를 한 번 등록한다. 키를 채팅이나 명령줄에 넣지 않는다.
+
+```powershell
+pwsh -NoProfile -File .\node_modules\@game-harness\decision-provider\src\register-jev-key.ps1 -ProjectRoot .
+pwsh -NoProfile -File .\node_modules\@game-harness\decision-provider\src\invoke-codewiki-jev.ps1 -ProjectRoot . -Task '조사할 작업'
+```
+
+키는 Windows DPAPI CurrentUser로 암호화하여 `%LOCALAPPDATA%\GameHarness\Keys`에 보관하며 프로젝트 경로에 묶는다. 호출기는 해당 키만 복호화하여 CodeWiki 자식 프로세스의 전용 stdin으로 전달한다. 키를 환경변수·argv·로그·프로젝트 파일에 넣지 않는다. 이 호출기는 CodeWiki `0.1.11-jev.0`을 요구하며 기본은 shadow다. `-Mode rerank`만 제안 순서를 적용한다. `-Status`는 등록 여부만 표시한다. 선택 호출은 task/후보 메타데이터 전송과 API 과금으로 이어질 수 있다.
+
+이 구성은 정상 호출 중 키 노출을 방지한다. 같은 사용자 권한으로 임의 셸을 실행하는 에이전트를 격리하는 권한 경계는 아니다. 기본 공급자와 기본 off 동작은 유지한다. 이 시험판은 원격 정식 릴리스가 아니다.
 
 유효한 키로 이 함수를 호출하면 제공한 task·후보 메타데이터가 OpenAI로 전달되며 API 과금이 발생할 수 있다. 소비자는 호출 여부와 후보 보호·정렬 정책을 소유한다. `protected` 값은 그대로 전달·보존하며 보호 후보의 낮은 label이 보호를 해제하지 않는다.
 
