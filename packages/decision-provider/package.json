@@ -1,6 +1,6 @@
 {
   "name": "@game-harness/decision-provider",
-  "version": "0.1.1-jev.0",
+  "version": "0.1.1-jev.1",
   "description": "선택적으로 사용하는 Decisions·Jev API 표면 후보 평가 공급자",
   "type": "module",
   "main": "./src/index.js",

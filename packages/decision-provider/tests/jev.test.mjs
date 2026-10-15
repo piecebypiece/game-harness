@@ -48,6 +48,36 @@ test('Jev uses its pinned endpoint/model and named criteria over existing metada
   assert.deepEqual(result.usage,{inputTokens:250,outputTokens:135,totalTokens:385});
   assert.equal(calls,0);
 });
+function largeRequest() {
+  return {schema:fixture.request.schema,task:'Find player movement prediction',
+    candidates:Array.from({length:128},(_,index)=>({id:`handle:F:candidate-${index}`,
+      path:`Assets/Scripts/Feature${index}.cs`,summary:'Local player prediction and position display.',
+      evidence:[`file metadata route ${index}`],protected:index%7===0}))};
+}
+test('Jev evaluates 128 metadata candidates without repeated wording exhausting the wire budget',async () => {
+  const request=largeRequest();
+  const data={model:'jev-1.13.0',answers:Object.fromEntries(request.candidates.map((_,index)=>[
+    `surface_${index}`,{type:'choice',choice:'high',confidence:1,
+      probabilities:{high:1,medium:0,low:0,unknown:0}}])),usage:{input_tokens:8000,output_tokens:128}};
+  let calls=0;
+  const {result}=await run(data,request,{fetchImpl:async (_url,options)=>{
+    calls++;
+    assert(Buffer.byteLength(options.body)<=64*1024);
+    const wire=JSON.parse(options.body);
+    assert.deepEqual(JSON.parse(wire.state),{task:request.task,candidates:request.candidates});
+    assert.equal(Object.keys(wire.questions).length,128);
+    return new Response(JSON.stringify(data));
+  }});
+  assert.equal(calls,1);assert.equal(result.status,'ok');assert.equal(result.rankings.length,128);
+});
+test('Jev still blocks an oversized wire body before HTTP when the metadata envelope fits',async () => {
+  const request=largeRequest();
+  request.candidates.forEach(candidate=>{candidate.summary='x'.repeat(256);});
+  assert(Buffer.byteLength(JSON.stringify(request))<64*1024);
+  const {result,calls}=await run(answerData(),request);
+  assert.equal(calls,0);assert.equal(result.reason,'request_too_large');
+  assert.deepEqual(result.rankings,[]);assert.equal(result.usage,null);
+});
 const invalidCases=[
   ['wrong model','invalid_response',data=>{data.model=key;}],
   ['partial answers','invalid_response',data=>{delete data.answers.surface_0;}],
