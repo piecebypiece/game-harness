@@ -1,8 +1,12 @@
 # Decisions·Jev 표면 후보 평가 공급자
 
 상태: 검토중
-조사 날짜: 2026-10-14
-패키지: `@game-harness/decision-provider@0.1.1-jev.0` (선택 연동 시험판)
+조사 날짜: 2026-10-16
+패키지: `@game-harness/decision-provider@0.1.1-jev.2` (선택 연동 시험판)
+
+이 prerelease는 CodeWiki의 기본 semantic 모드 `off`를 유지한다. 채택 판정은 `adoptionRefuted=true`이며 효용 개선은 입증되지 않았다. 설치·계약·fallback 검증은 의미 평가의 정확도나 작업 성과 향상을 입증하지 않는다. 명시적 시험 외에는 공급자를 호출하지 않는다.
+
+0.1.1-jev.2는 0.1.1-jev.1에서 문서와 버전 메타데이터만 정정했다. JavaScript·타입 선언·schema·PowerShell 호출기의 bytes는 동일하다. 기존 0.1.1-jev.1 tarball과 manifest는 덮어쓰지 않는다.
 
 기존 후보 메타데이터를 선택적으로 Decisions API에 평가 요청하는 독립 ES module leaf 패키지다. `rankSurfaceCandidates`는 후보를 생성하거나 정렬하지 않고 모든 요청 ID의 label과 confidence를 돌려준다. 소비자가 `ok` 결과만 사용하고, 나머지는 기존 후보 순서 전체로 fallback한다. Core, native broker, human approval용 `DecisionRequest`/`DecisionRecord`와 의존 관계가 없다. 런타임 의존성과 OpenAI SDK가 없으며 Node.js 20 이상에서 native fetch를 사용한다.
 
@@ -11,7 +15,7 @@
 배포한 고정 tarball을 소비자 프로젝트에 설치한다. Core 패키지 설치나 workspace 등록은 필요하지 않다.
 
 ```sh
-npm install --save-exact /path/to/game-harness-decision-provider-0.1.0.tgz
+npm install --save-exact /path/to/game-harness-decision-provider-0.1.1-jev.2.tgz
 ```
 
 ```js
@@ -46,7 +50,7 @@ pwsh -NoProfile -File .\node_modules\@game-harness\decision-provider\src\invoke-
 
 이 구성은 정상 호출 중 키 노출을 방지한다. 같은 사용자 권한으로 임의 셸을 실행하는 에이전트를 격리하는 권한 경계는 아니다. 기본 공급자와 기본 off 동작은 유지한다. 이 시험판은 원격 정식 릴리스가 아니다.
 
-유효한 키로 이 함수를 호출하면 제공한 task·후보 메타데이터가 OpenAI로 전달되며 API 과금이 발생할 수 있다. 소비자는 호출 여부와 후보 보호·정렬 정책을 소유한다. `protected` 값은 그대로 전달·보존하며 보호 후보의 낮은 label이 보호를 해제하지 않는다.
+유효한 키로 이 함수를 호출하면 제공한 task·후보 메타데이터가 선택한 공급자(OpenAI 또는 TypeSafe)로 전달되며 API 과금이 발생할 수 있다. 소비자는 호출 여부와 후보 보호·정렬 정책을 소유한다. `protected` 값은 그대로 전달·보존하며 보호 후보의 낮은 label이 보호를 해제하지 않는다.
 
 ## 계약
 
@@ -57,7 +61,7 @@ result는 항상 다음 필드를 갖는다.
 | 필드 | 값 |
 |---|---|
 | `schema` | `game-harness.surface-ranking.result/1` |
-| `provider` / `model` | `openai-decisions` / `gpt-6-luna` |
+| `provider` / `model` | `openai-decisions` / `gpt-6-luna`, 또는 `typesafe-jev` / `jev-1.13.0` |
 | `status` | `ok`, `unavailable`, `error` |
 | `reason` | 성공 시 null, 실패 시 정해진 안전한 reason code |
 | `rankings` | 성공 시 요청 순서의 `{id,label,confidence}` 전체, 실패 시 `[]` |
@@ -76,7 +80,7 @@ POST endpoint는 `https://api.openai.com/v1/decisions`, model은 `gpt-6-luna`로
 - deadline은 진입부터 입력 검증·fetch·본문 읽기·응답 검증 전체에 적용하며 retry는 0회다. redirect는 `error`이며 반환된 redirect 응답도 거부한다.
 - 본문은 제한된 stream reader로 읽고 Content-Length만 신뢰하지 않는다. UTF-8 오류·잘못된 JSON도 실패다.
 - AbortSignal을 무시하는 fetch나 영원히 pending인 body에서도 deadline race로 결과를 반환한다. 타이머를 제거하고 abort, reader cancel/release, 늦게 도착한 body cancel을 수행한다. 주입한 fetch/reader가 cancel 자체도 무시하면 그 구현 내부 자원을 강제로 종료할 수 없지만 반환을 기다리게 하지는 않는다. JavaScript event loop가 외부 동기 코드로 막히면 선점할 수 없으며 다음 실행 시 deadline을 다시 확인한다.
-- 오류 reason은 `invalid_request`, `request_too_large`, `invalid_options`, `unsupported_provider`, `missing_api_key`, `fetch_unavailable`, `timeout`, `network_error`, `redirect_rejected`, `http_error`, `response_too_large`, `invalid_response`, `refusal`, `unknown`, `low_confidence`, `invalid_usage` 중 하나다. 원본 입력·응답·header·키·exception은 결과나 로그에 넣지 않는다.
+- 오류 reason은 `invalid_request`, `request_too_large`, `invalid_options`, `unsupported_provider`, `missing_api_key`, `credential_in_request`, `fetch_unavailable`, `timeout`, `network_error`, `redirect_rejected`, `http_error`, `response_too_large`, `invalid_response`, `refusal`, `unknown`, `low_confidence`, `invalid_usage` 중 하나다. 원본 입력·응답·header·키·exception은 결과나 로그에 넣지 않는다.
 - 공급자는 로그, 평가 기록, 파일을 만들지 않는다. 실제 유료 API 호출·계정 접근·의미 평가 품질은 이 패키지의 offline 시험으로 입증하지 않는다.
 
 ## 개발 검증

@@ -2,6 +2,12 @@
 
 상태: 검토중
 
+## 0.1.1-jev.2 — 2026-10-16
+
+- README의 패키지 버전·설치 예시·공급자 표기를 정정하고 기본 semantic `off`, `adoptionRefuted=true`, 효용 개선 미입증을 명시했다.
+- 0.1.1-jev.1과 runtime·타입 선언·schema·PowerShell bytes는 동일하다. 문서와 버전 메타데이터만 바꾸며 기존 artifact는 보존한다.
+- 실험 prerelease 준비이며 설치·fallback 검증을 채택이나 품질 향상 증거로 사용하지 않는다.
+
 ## 0.1.1-jev.1 — 2026-10-15
 
 - 후보마다 반복하는 Jev 질문 문구를 줄여 메타데이터가 약 32KiB인 실제 CodeWiki 요청을 64KiB 전송 상한 안에 담는다.
