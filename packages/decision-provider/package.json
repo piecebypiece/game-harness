@@ -1,7 +1,7 @@
 {
   "name": "@game-harness/decision-provider",
-  "version": "0.1.0",
-  "description": "선택적으로 사용하는 Decisions API 표면 후보 평가 공급자",
+  "version": "0.1.1-jev.2",
+  "description": "선택적으로 사용하는 Decisions·Jev API 표면 후보 평가 공급자",
   "type": "module",
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
@@ -11,7 +11,7 @@
   },
   "files": ["src", "schemas", "README.md", "LICENSE", "CHANGELOG.md"],
   "scripts": {
-    "test": "node --test tests/provider.test.mjs tests/schemas.test.mjs",
+    "test": "node --test tests/provider.test.mjs tests/jev.test.mjs tests/schemas.test.mjs tests/windows-key.test.mjs",
     "typecheck": "tsc -p tsconfig.consumer.json --noEmit"
   },
   "engines": { "node": ">=20" },

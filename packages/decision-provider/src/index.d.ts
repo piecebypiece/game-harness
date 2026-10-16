@@ -26,26 +26,29 @@ export interface SurfaceRankingUsage {
 
 interface ResultBase {
   schema: 'game-harness.surface-ranking.result/1';
-  provider: 'openai-decisions';
-  model: 'gpt-6-luna';
   elapsedMs: number;
 }
 
 export type SurfaceRankingResult = ResultBase & (
+  | { provider: 'openai-decisions'; model: 'gpt-6-luna' }
+  | { provider: 'typesafe-jev'; model: 'jev-1.13.0' }
+) & (
   | { status: 'ok'; reason: null; rankings: SurfaceRanking[]; usage: SurfaceRankingUsage }
   | { status: 'unavailable' | 'error'; reason: string; rankings: []; usage: null }
 );
 
 export interface SurfaceRankingOptions {
-  /** Explicit API key; otherwise only OPENAI_API_KEY is consulted. */
+  /** Explicit API key; otherwise the selected provider's API-key environment variable is consulted. */
   apiKey?: string;
+  /** Explicit private stdin pipe; disables API-key environment fallback. Not combined with apiKey. */
+  apiKeyInput?: 'stdin';
   /** Native-compatible fetch injection for offline tests. */
   fetchImpl?: typeof fetch;
   /** Finite positive total deadline, at most 10000 ms. Default: 10000. */
   timeoutMs?: number;
   /** Finite confidence threshold in [0, 1]. Default: 0.5, not a calibration claim. */
   minConfidence?: number;
-  /** Only openai-decisions is implemented. Other strings return unavailable without network. */
+  /** openai-decisions (default) or typesafe-jev. Other strings are unavailable without network. */
   provider?: string;
 }
 

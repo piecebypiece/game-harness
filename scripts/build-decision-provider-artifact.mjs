@@ -20,7 +20,7 @@ function run(bin, argv, cwd = root) {
 const sourceCommit = run('git', ['rev-parse', 'HEAD']);
 if (run('git', ['status', '--porcelain', '--untracked-files=all'])) throw new Error('Release requires a clean source checkout.');
 const metadata = JSON.parse(readFileSync(join(leaf, 'package.json'), 'utf8'));
-if (metadata.name !== '@game-harness/decision-provider' || !/^\d+\.\d+\.\d+$/.test(metadata.version)) throw new Error('Unexpected provider package identity.');
+if (metadata.name !== '@game-harness/decision-provider' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*)?$/.test(metadata.version)) throw new Error('Unexpected provider package identity.');
 mkdirSync(out, { recursive: true });
 const artifact = `game-harness-decision-provider-${metadata.version}.tgz`;
 const artifactPath = join(out, artifact);
